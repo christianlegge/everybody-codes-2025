@@ -52,6 +52,29 @@ pub fn solve(data: String) {
     println!("final result: {:#?}", res);
 }
 
+fn result_exceeds(num: &MyNumber) -> bool {
+    num.x > 1000000 || num.x < -1000000 || num.y > 1000000 || num.y < -1000000
+}
+
+fn should_engrave(num: &MyNumber) -> bool {
+    let mut res = MyNumber { x: 0, y: 0 };
+
+    for _ in 0..100 {
+        res = res.mult(&res);
+        res = res.div(&MyNumber {
+            x: 100000,
+            y: 100000,
+        });
+        res = res.add(num);
+
+        if result_exceeds(&res) {
+            return false;
+        }
+    }
+
+    true
+}
+
 pub fn solve2(data: String) {
     println!("Text input: {}", data);
     let re = Regex::new(r"A=\[(-?\d+),(-?\d+)\]").unwrap();
@@ -64,37 +87,45 @@ pub fn solve2(data: String) {
         y: (&caps[2]).parse::<i64>().unwrap(),
     };
 
-    let mut res = MyNumber { x: 0, y: 0 };
+    let mut engraving = 0;
 
-    for _ in 0..3 {
-        res = res.mult(&res);
-        res = res.div(&MyNumber { x: 10, y: 10 });
-        res = res.add(&start);
+    for i in 0..101 {
+        for j in 0..101 {
+            let point = start.add(&MyNumber {
+                x: 10 * i,
+                y: 10 * j,
+            });
+            if should_engrave(&point) {
+                engraving += 1;
+            }
+        }
     }
 
-    println!("final result: {:#?}", res);
+    println!("final result: {:#?}", engraving);
 }
 
 pub fn solve3(data: String) {
     println!("Text input: {}", data);
-    let mut data = data.split("\n");
-    let mut names = data.next().unwrap().split(",").collect::<Vec<&str>>();
-    data.next();
-    let moves = data.next().unwrap().split(",");
-    for m in moves {
-        let sign: i64 = match &m.chars().nth(0) {
-            Some('L') => -1,
-            Some('R') => 1,
-            _ => panic!("error parsing string {}", m),
-        };
-        let dist = match (&m[1..]).parse::<i64>() {
-            Ok(num) => num,
-            Err(e) => panic!("error parsing string {}: {}", m, e),
-        };
-        let off = dist * sign;
-        let swap_idx = off.rem_euclid(names.len() as i64);
-        println!("{:#?} {} {} {}", sign, dist, off, swap_idx);
-        names.swap(0, swap_idx as usize);
+    let re = Regex::new(r"A=\[(-?\d+),(-?\d+)\]").unwrap();
+    let Some(caps) = re.captures(&data) else {
+        panic!("invalid format for number")
+    };
+
+    let start = MyNumber {
+        x: (&caps[1]).parse::<i64>().unwrap(),
+        y: (&caps[2]).parse::<i64>().unwrap(),
+    };
+
+    let mut engraving = 0;
+
+    for i in 0..1001 {
+        for j in 0..1001 {
+            let point = start.add(&MyNumber { x: i, y: j });
+            if should_engrave(&point) {
+                engraving += 1;
+            }
+        }
     }
-    println!("name: {}", names[0])
+
+    println!("final result: {:#?}", engraving);
 }
