@@ -8,6 +8,7 @@ edition = "2021"
 [dependencies]
 either = "1.9.0"
 hashbrown = "0.14.3"
+itertools = "0.14.0"
 num = "0.4.1"
 regex = "1.10.2"
 seq-macro = "0.3.6"
