@@ -1,5 +1,4 @@
 use everybody_codes_2025::util::line_split_numbers;
-use regex::Regex;
 
 pub fn solve(data: String) {
     println!("Text input: {}", data);

@@ -1,34 +1,4 @@
 use hashbrown::{HashMap, HashSet};
-use regex::Regex;
-
-#[derive(Debug)]
-struct MyNumber {
-    x: i64,
-    y: i64,
-}
-
-impl MyNumber {
-    pub fn mult(&self, other: &Self) -> Self {
-        MyNumber {
-            x: self.x * other.x - self.y * other.y,
-            y: self.x * other.y + self.y * other.x,
-        }
-    }
-
-    pub fn add(&self, other: &Self) -> Self {
-        MyNumber {
-            x: self.x + other.x,
-            y: self.y + other.y,
-        }
-    }
-
-    pub fn div(&self, other: &Self) -> Self {
-        MyNumber {
-            x: self.x / other.x,
-            y: self.y / other.y,
-        }
-    }
-}
 
 pub fn solve(data: String) {
     println!("Text input: {}", data);
@@ -42,29 +12,6 @@ pub fn solve(data: String) {
     }
     let sum = crate_set.into_iter().reduce(|a, v| a + v);
     println!("sum: {:#?}", sum);
-}
-
-fn result_exceeds(num: &MyNumber) -> bool {
-    num.x > 1000000 || num.x < -1000000 || num.y > 1000000 || num.y < -1000000
-}
-
-fn should_engrave(num: &MyNumber) -> bool {
-    let mut res = MyNumber { x: 0, y: 0 };
-
-    for _ in 0..100 {
-        res = res.mult(&res);
-        res = res.div(&MyNumber {
-            x: 100000,
-            y: 100000,
-        });
-        res = res.add(num);
-
-        if result_exceeds(&res) {
-            return false;
-        }
-    }
-
-    true
 }
 
 pub fn solve2(data: String) {

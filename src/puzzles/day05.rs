@@ -1,7 +1,6 @@
 use std::str::FromStr;
 
-use everybody_codes_2025::util::{comma_split_numbers, line_split_numbers};
-use regex::Regex;
+use everybody_codes_2025::util::comma_split_numbers;
 
 #[derive(Debug, Default)]
 struct Fishbone {
