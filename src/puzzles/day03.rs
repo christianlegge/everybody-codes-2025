@@ -1,4 +1,4 @@
-use hashbrown::HashSet;
+use hashbrown::{HashMap, HashSet};
 use regex::Regex;
 
 #[derive(Debug)]
@@ -90,26 +90,22 @@ pub fn solve2(data: String) {
 
 pub fn solve3(data: String) {
     println!("Text input: {}", data);
-    let re = Regex::new(r"A=\[(-?\d+),(-?\d+)\]").unwrap();
-    let Some(caps) = re.captures(&data) else {
-        panic!("invalid format for number")
-    };
-
-    let start = MyNumber {
-        x: (&caps[1]).parse::<i64>().unwrap(),
-        y: (&caps[2]).parse::<i64>().unwrap(),
-    };
-
-    let mut engraving = 0;
-
-    for i in 0..1001 {
-        for j in 0..1001 {
-            let point = start.add(&MyNumber { x: i, y: j });
-            if should_engrave(&point) {
-                engraving += 1;
+    let crates = data
+        .split(",")
+        .map(|x| x.parse::<u32>().unwrap())
+        .collect::<Vec<u32>>();
+    let mut crate_set: HashMap<u32, u32> = HashMap::new();
+    let mut max = 1;
+    for ele in crates {
+        if crate_set.contains_key(&ele) {
+            let prev = crate_set.get(&ele).unwrap().clone();
+            crate_set.insert(ele, prev + 1);
+            if prev + 1 > max {
+                max = prev + 1;
             }
+        } else {
+            crate_set.insert(ele, 1);
         }
     }
-
-    println!("final result: {:#?}", engraving);
+    println!("max: {:#?}", max);
 }
