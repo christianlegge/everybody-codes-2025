@@ -30,17 +30,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0942ffc6dcaadf03badf6e6a2d0228460359d5e34b57ccdc720b7382dfbd5ec5"
 
 [[package]]
-name = "aoc2023"
-version = "0.1.0"
-dependencies = [
- "either",
- "hashbrown",
- "num",
- "regex",
- "seq-macro",
-]
-
-[[package]]
 name = "autocfg"
 version = "1.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -57,6 +46,17 @@ name = "either"
 version = "1.9.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a26ae43d7bcc3b814de94796a5e736d4029efb0ee900c12e2d54c993ad1a1e07"
+
+[[package]]
+name = "everybody-codes-2025"
+version = "0.1.0"
+dependencies = [
+ "either",
+ "hashbrown",
+ "num",
+ "regex",
+ "seq-macro",
+]
 
 [[package]]
 name = "hashbrown"

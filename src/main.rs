@@ -17,7 +17,7 @@ fn main() {
                 std::fs::read_to_string(format!("data/everybody_codes_e2025_{}_p2.txt", arg));
             let data3 =
                 std::fs::read_to_string(format!("data/everybody_codes_e2025_{}_p3.txt", arg));
-            seq!(N in 01..=25 {
+            seq!(N in 01..=20 {
                 match arg {
                 #(
                 stringify!(q~N) => {

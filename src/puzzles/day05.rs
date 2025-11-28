@@ -1,6 +1,6 @@
 use std::str::FromStr;
 
-use aoc2023::util::{comma_split_numbers, line_split_numbers};
+use everybody_codes_2025::util::{comma_split_numbers, line_split_numbers};
 use regex::Regex;
 
 #[derive(Debug, Default)]
