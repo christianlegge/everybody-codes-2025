@@ -1,131 +1,110 @@
+use std::str::FromStr;
+
+use aoc2023::util::{comma_split_numbers, line_split_numbers};
 use regex::Regex;
 
-#[derive(Debug)]
-struct MyNumber {
-    x: i64,
-    y: i64,
+#[derive(Debug, Default)]
+struct Fishbone {
+    segments: Vec<Segment>,
 }
 
-impl MyNumber {
-    pub fn mult(&self, other: &Self) -> Self {
-        MyNumber {
-            x: self.x * other.x - self.y * other.y,
-            y: self.x * other.y + self.y * other.x,
+#[derive(Debug)]
+struct Segment {
+    left: Option<i64>,
+    spine: i64,
+    right: Option<i64>,
+}
+
+#[derive(Debug)]
+struct Sword {
+    identifier: i64,
+    fishbone: Fishbone,
+}
+
+impl FromStr for Sword {
+    type Err = ();
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        let parts = s.split(":").collect::<Vec<&str>>();
+        let numbers = comma_split_numbers::<i64>(parts[1].to_owned());
+        if let Some(id) = parts.first() {
+            Ok(Sword {
+                identifier: id.parse::<i64>().unwrap(),
+                fishbone: Fishbone::from_numbers(numbers.into_iter()),
+            })
+        } else {
+            panic!("error constructing sword: {}", s);
         }
     }
+}
 
-    pub fn add(&self, other: &Self) -> Self {
-        MyNumber {
-            x: self.x + other.x,
-            y: self.y + other.y,
+impl Fishbone {
+    pub fn from_numbers<T>(nums: T) -> Self
+    where
+        T: Iterator<Item = i64>,
+    {
+        let mut fishbone = Fishbone::default();
+        for num in nums {
+            fishbone.add_number(num);
         }
+        fishbone
     }
 
-    pub fn div(&self, other: &Self) -> Self {
-        MyNumber {
-            x: self.x / other.x,
-            y: self.y / other.y,
+    pub fn add_number(&mut self, n: i64) {
+        for segment in &mut self.segments {
+            if n < segment.spine && segment.left.is_none() {
+                segment.left = Some(n);
+                return;
+            } else if n > segment.spine && segment.right.is_none() {
+                segment.right = Some(n);
+                return;
+            }
         }
+        self.segments.push(Segment {
+            spine: n,
+            left: None,
+            right: None,
+        });
+    }
+
+    pub fn get_quality(&self) -> i64 {
+        let mut quality = String::default();
+        for segment in &self.segments {
+            quality += &segment.spine.to_string();
+        }
+        quality.parse().unwrap()
     }
 }
 
 pub fn solve(data: String) {
     println!("Text input: {}", data);
-    let re = Regex::new(r"A=\[(\d+),(\d+)\]").unwrap();
-    let Some(caps) = re.captures(&data) else {
-        panic!("invalid format for number")
-    };
-
-    let start = MyNumber {
-        x: (&caps[1]).parse::<i64>().unwrap(),
-        y: (&caps[2]).parse::<i64>().unwrap(),
-    };
-
-    let mut res = MyNumber { x: 0, y: 0 };
-
-    for _ in 0..3 {
-        res = res.mult(&res);
-        res = res.div(&MyNumber { x: 10, y: 10 });
-        res = res.add(&start);
+    let parts = data.split(":").collect::<Vec<&str>>();
+    let numbers = comma_split_numbers(parts[1].to_owned());
+    let mut fishbone = Fishbone::default();
+    for number in numbers {
+        fishbone.add_number(number);
     }
-
-    println!("final result: {:#?}", res);
-}
-
-fn result_exceeds(num: &MyNumber) -> bool {
-    num.x > 1000000 || num.x < -1000000 || num.y > 1000000 || num.y < -1000000
-}
-
-fn should_engrave(num: &MyNumber) -> bool {
-    let mut res = MyNumber { x: 0, y: 0 };
-
-    for _ in 0..100 {
-        res = res.mult(&res);
-        res = res.div(&MyNumber {
-            x: 100000,
-            y: 100000,
-        });
-        res = res.add(num);
-
-        if result_exceeds(&res) {
-            return false;
-        }
-    }
-
-    true
+    dbg!(&fishbone);
+    println!("quality: {}", fishbone.get_quality());
 }
 
 pub fn solve2(data: String) {
-    println!("Text input: {}", data);
-    let re = Regex::new(r"A=\[(-?\d+),(-?\d+)\]").unwrap();
-    let Some(caps) = re.captures(&data) else {
-        panic!("invalid format for number")
-    };
-
-    let start = MyNumber {
-        x: (&caps[1]).parse::<i64>().unwrap(),
-        y: (&caps[2]).parse::<i64>().unwrap(),
-    };
-
-    let mut engraving = 0;
-
-    for i in 0..101 {
-        for j in 0..101 {
-            let point = start.add(&MyNumber {
-                x: 10 * i,
-                y: 10 * j,
-            });
-            if should_engrave(&point) {
-                engraving += 1;
-            }
-        }
-    }
-
-    println!("final result: {:#?}", engraving);
+    let mut swords = data
+        .split_whitespace()
+        .map(|s| Sword::from_str(s).unwrap())
+        .collect::<Vec<Sword>>();
+    swords.sort_by(|sword, other| {
+        sword
+            .fishbone
+            .get_quality()
+            .cmp(&other.fishbone.get_quality())
+    });
+    dbg!(&swords.first());
+    dbg!(&swords.last());
+    println!(
+        "diff: {}",
+        swords.first().unwrap().fishbone.get_quality()
+            - swords.last().unwrap().fishbone.get_quality()
+    );
 }
 
-pub fn solve3(data: String) {
-    println!("Text input: {}", data);
-    let re = Regex::new(r"A=\[(-?\d+),(-?\d+)\]").unwrap();
-    let Some(caps) = re.captures(&data) else {
-        panic!("invalid format for number")
-    };
-
-    let start = MyNumber {
-        x: (&caps[1]).parse::<i64>().unwrap(),
-        y: (&caps[2]).parse::<i64>().unwrap(),
-    };
-
-    let mut engraving = 0;
-
-    for i in 0..1001 {
-        for j in 0..1001 {
-            let point = start.add(&MyNumber { x: i, y: j });
-            if should_engrave(&point) {
-                engraving += 1;
-            }
-        }
-    }
-
-    println!("final result: {:#?}", engraving);
-}
+pub fn solve3(data: String) {}

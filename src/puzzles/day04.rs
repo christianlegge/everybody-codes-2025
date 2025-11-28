@@ -3,7 +3,7 @@ use regex::Regex;
 
 pub fn solve(data: String) {
     println!("Text input: {}", data);
-    let inputs = line_split_numbers(data);
+    let inputs = line_split_numbers::<i32>(data);
 
     println!(
         "final result: {}",
@@ -13,7 +13,7 @@ pub fn solve(data: String) {
 
 pub fn solve2(data: String) {
     println!("Text input: {}", data);
-    let inputs = line_split_numbers(data);
+    let inputs = line_split_numbers::<i32>(data);
 
     println!(
         "final result: {}",
