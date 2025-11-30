@@ -1,12 +1,13 @@
 use std::{char, fmt::format, str::FromStr};
 
-use hashbrown::HashMap;
+use hashbrown::{HashMap, HashSet};
 use itertools::{all, any};
 
 #[derive(Debug)]
 struct Grammar {
     rules: Vec<Rule>,
     memo_map: HashMap<String, u32>,
+    memo_set: HashSet<String>,
 }
 
 #[derive(Debug, Clone)]
@@ -31,11 +32,17 @@ impl Grammar {
             return 0;
         }
         if prefix.len() == 11 {
-            self.memo_map.insert(prefix, 1);
+            self.memo_map.insert(prefix.clone(), 1);
+            self.memo_set.insert(prefix);
             return 1;
         }
         let last_char = prefix.chars().last().unwrap();
-        let count_self = if prefix.len() < 7 { 0 } else { 1 };
+        let count_self = if prefix.len() < 7 {
+            0
+        } else {
+            self.memo_set.insert(prefix.clone());
+            1
+        };
         let char_rule = self.get_char_rule(last_char).cloned();
         match char_rule {
             None => {
@@ -89,6 +96,7 @@ pub fn solve(data: String) {
     let g = Grammar {
         rules: lines.map(|line| Rule::from_str(line).unwrap()).collect(),
         memo_map: HashMap::new(),
+        memo_set: HashSet::new(),
     };
 
     let name = names.find(|&name| g.valid(name)).unwrap();
@@ -118,6 +126,7 @@ pub fn solve2(data: String) {
     let g = Grammar {
         rules: lines.map(|line| Rule::from_str(line).unwrap()).collect(),
         memo_map: HashMap::new(),
+        memo_set: HashSet::new(),
     };
 
     let index_sum = names
@@ -132,38 +141,18 @@ pub fn solve2(data: String) {
 pub fn solve3(data: String) {
     println!("Text input: {}", data);
 
-    let data = r"Khara,Xaryt,Noxer,Kharax
-
-r > v,e,a,g,y
-a > e,v,x,r,g
-e > r,x,v,t
-h > a,e,v
-g > r,y
-y > p,t
-i > v,r
-K > h
-v > e
-B > r
-t > h
-N > e
-p > h
-H > e
-l > t
-z > e
-X > a
-n > v
-x > z
-T > i";
-
     let mut lines = data.lines();
     let names = lines.next().unwrap().split(",");
     lines.next();
     let mut g = Grammar {
         rules: lines.map(|line| Rule::from_str(line).unwrap()).collect(),
         memo_map: HashMap::new(),
+        memo_set: HashSet::new(),
     };
 
     for ele in names {
         println!("strings for {ele}: {}", g.count_strings(String::from(ele)));
     }
+
+    println!("{}", g.memo_set.len());
 }
