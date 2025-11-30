@@ -25,11 +25,11 @@ impl Ord for Sword {
         let a = self.fishbone.get_quality();
         let b = other.fishbone.get_quality();
         if a != b {
-            return a.cmp(&b);
+            a.cmp(&b)
         } else {
-            let mut a_iter = self.fishbone.segments.iter();
+            let a_iter = self.fishbone.segments.iter();
             let mut b_iter = other.fishbone.segments.iter();
-            while let Some(x) = a_iter.next() {
+            for x in a_iter {
                 let y = b_iter.next().unwrap();
                 let x_num = x.get_concat_number();
                 let y_num = y.get_concat_number();
@@ -37,14 +37,14 @@ impl Ord for Sword {
                     return x_num.cmp(&y_num);
                 }
             }
-            return self.identifier.cmp(&other.identifier);
+            self.identifier.cmp(&other.identifier)
         }
     }
 }
 
 impl PartialOrd for Sword {
     fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
-        Some(self.cmp(&other))
+        Some(self.cmp(other))
     }
 }
 

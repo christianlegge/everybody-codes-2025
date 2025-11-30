@@ -45,7 +45,7 @@ pub fn solve3(data: String) {
     let mut max = 1;
     for ele in crates {
         if crate_set.contains_key(&ele) {
-            let prev = crate_set.get(&ele).unwrap().clone();
+            let prev = crate_set.get(&ele).unwrap().to_owned();
             crate_set.insert(ele, prev + 1);
             if prev + 1 > max {
                 max = prev + 1;

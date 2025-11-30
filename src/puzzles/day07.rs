@@ -82,7 +82,7 @@ impl FromStr for Rule {
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let mut parts = s.split(" > ");
         Ok(Rule {
-            start: s.chars().nth(0).unwrap(),
+            start: s.chars().next().unwrap(),
             follows: parts.nth(1).unwrap().replace(",", ""),
         })
     }
@@ -131,7 +131,7 @@ pub fn solve2(data: String) {
 
     let index_sum = names
         .enumerate()
-        .filter(|(_, name)| g.valid(*name))
+        .filter(|(_, name)| g.valid(name))
         .map(|(i, _)| i + 1)
         .sum::<usize>();
 

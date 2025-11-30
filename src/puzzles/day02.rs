@@ -37,8 +37,8 @@ pub fn solve(data: String) {
     };
 
     let start = MyNumber {
-        x: (&caps[1]).parse::<i64>().unwrap(),
-        y: (&caps[2]).parse::<i64>().unwrap(),
+        x: caps[1].parse::<i64>().unwrap(),
+        y: caps[2].parse::<i64>().unwrap(),
     };
 
     let mut res = MyNumber { x: 0, y: 0 };
@@ -83,8 +83,8 @@ pub fn solve2(data: String) {
     };
 
     let start = MyNumber {
-        x: (&caps[1]).parse::<i64>().unwrap(),
-        y: (&caps[2]).parse::<i64>().unwrap(),
+        x: caps[1].parse::<i64>().unwrap(),
+        y: caps[2].parse::<i64>().unwrap(),
     };
 
     let mut engraving = 0;
@@ -112,8 +112,8 @@ pub fn solve3(data: String) {
     };
 
     let start = MyNumber {
-        x: (&caps[1]).parse::<i64>().unwrap(),
-        y: (&caps[2]).parse::<i64>().unwrap(),
+        x: caps[1].parse::<i64>().unwrap(),
+        y: caps[2].parse::<i64>().unwrap(),
     };
 
     let mut engraving = 0;

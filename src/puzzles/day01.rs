@@ -6,12 +6,12 @@ pub fn solve(data: String) {
     let moves = data.next().unwrap().split(",");
     let mut idx = 0;
     for m in moves {
-        let sign: i32 = match &m.chars().nth(0) {
+        let sign: i32 = match &m.chars().next() {
             Some('L') => -1,
             Some('R') => 1,
             _ => panic!("error parsing string {}", m),
         };
-        let dist = match (&m[1..]).parse::<i32>() {
+        let dist = match (m[1..]).parse::<i32>() {
             Ok(num) => num,
             Err(e) => panic!("error parsing string {}: {}", m, e),
         };
@@ -32,12 +32,12 @@ pub fn solve2(data: String) {
     let moves = data.next().unwrap().split(",");
     let mut idx = 0;
     for m in moves {
-        let sign: i32 = match &m.chars().nth(0) {
+        let sign: i32 = match &m.chars().next() {
             Some('L') => -1,
             Some('R') => 1,
             _ => panic!("error parsing string {}", m),
         };
-        let dist = match (&m[1..]).parse::<i32>() {
+        let dist = match (m[1..]).parse::<i32>() {
             Ok(num) => num,
             Err(e) => panic!("error parsing string {}: {}", m, e),
         };
@@ -57,12 +57,12 @@ pub fn solve3(data: String) {
     data.next();
     let moves = data.next().unwrap().split(",");
     for m in moves {
-        let sign: i32 = match &m.chars().nth(0) {
+        let sign: i32 = match &m.chars().next() {
             Some('L') => -1,
             Some('R') => 1,
             _ => panic!("error parsing string {}", m),
         };
-        let dist = match (&m[1..]).parse::<i32>() {
+        let dist = match (m[1..]).parse::<i32>() {
             Ok(num) => num,
             Err(e) => panic!("error parsing string {}: {}", m, e),
         };

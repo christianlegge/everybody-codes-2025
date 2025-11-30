@@ -15,17 +15,17 @@ where
             cur.clear();
         }
         cur.push(n);
-        cur_char = Some(n.clone());
+        cur_char = Some(n.to_owned());
     }
 
     out.push(cur.clone());
     out
 }
 
-fn find_pairs(s: &String, mentor: char) -> usize {
+fn find_pairs(s: &str, mentor: char) -> usize {
     let mut iter = s.chars();
     let mut total_novices = 0;
-    while iter.find(|&c| c == mentor).is_some() {
+    while iter.any(|c| c == mentor) {
         let new_iter = iter.clone();
         let novices = new_iter
             .filter(|&c| c == mentor.to_ascii_lowercase())
