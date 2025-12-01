@@ -1,5 +1,6 @@
 use std::{num::ParseIntError, str::FromStr};
 
+use anyhow::Error;
 use itertools::Itertools;
 
 #[derive(Debug)]
@@ -85,33 +86,34 @@ fn find_similarity(child: &str, parent1: &str, parent2: &str) -> i32 {
     similarity
 }
 
-pub fn solve(data: String) {
+pub fn solve1(data: &str) -> Result<String, Error> {
     println!("Text input: {}", data);
     let mut lines = data.lines();
     let one = lines.next().unwrap().split(":").nth(1).unwrap();
     let two = lines.next().unwrap().split(":").nth(1).unwrap();
     let three = lines.next().unwrap().split(":").nth(1).unwrap();
     if find_child(one, two, three) {
-        println!("similarity: {}", find_similarity(one, two, three))
+        Ok(find_similarity(one, two, three).to_string())
     } else if find_child(two, one, three) {
-        println!("similarity: {}", find_similarity(two, one, three))
+        Ok(find_similarity(two, one, three).to_string())
     } else if find_child(three, one, two) {
-        println!("similarity: {}", find_similarity(three, one, two))
+        Ok(find_similarity(three, one, two).to_string())
     } else {
-        println!("child not found")
+        Err(anyhow::anyhow!("child not found"))
     }
 }
 
-pub fn solve2(data: String) {
+pub fn solve2(data: &str) -> Result<String, Error> {
     println!("Text input: {}", data);
     let scales = data
         .lines()
         .map(|s| Scale::from_str(s).unwrap())
         .collect::<Vec<Scale>>();
     let s = find_children(&scales);
-    println!("total similarity: {}", s);
+    Ok(s.to_string())
 }
 
-pub fn solve3(data: String) {
+pub fn solve3(data: &str) -> Result<String, Error> {
     println!("Text input: {}", data);
+    Ok("Unimplemented".to_string())
 }

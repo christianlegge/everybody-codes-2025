@@ -1,6 +1,7 @@
 use std::str::FromStr;
 
-use everybody_codes_2025::util::comma_split_numbers;
+use anyhow::Error;
+use everybody_codes_2025::util::parse_csv;
 
 #[derive(Debug, Default)]
 struct Fishbone {
@@ -57,10 +58,10 @@ impl PartialEq for Sword {
 impl Eq for Sword {}
 
 impl FromStr for Sword {
-    type Err = ();
+    type Err = Error;
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let parts = s.split(":").collect::<Vec<&str>>();
-        let numbers = comma_split_numbers::<i64>(parts[1].to_owned());
+        let numbers = parse_csv::<i64>(parts[1])?;
         if let Some(id) = parts.first() {
             Ok(Sword {
                 identifier: id.parse::<i64>().unwrap(),
@@ -124,19 +125,19 @@ impl Fishbone {
     }
 }
 
-pub fn solve(data: String) {
+pub fn solve1(data: &str) -> Result<String, Error> {
     println!("Text input: {}", data);
     let parts = data.split(":").collect::<Vec<&str>>();
-    let numbers = comma_split_numbers(parts[1].to_owned());
+    let numbers = parse_csv(parts[1])?;
     let mut fishbone = Fishbone::default();
     for number in numbers {
         fishbone.add_number(number);
     }
     dbg!(&fishbone);
-    println!("quality: {}", fishbone.get_quality());
+    Ok(fishbone.get_quality().to_string())
 }
 
-pub fn solve2(data: String) {
+pub fn solve2(data: &str) -> Result<String, Error> {
     let mut swords = data
         .split_whitespace()
         .map(|s| Sword::from_str(s).unwrap())
@@ -150,14 +151,12 @@ pub fn solve2(data: String) {
     swords.sort();
     dbg!(&swords.first());
     dbg!(&swords.last());
-    println!(
-        "diff: {}",
-        swords.last().unwrap().fishbone.get_quality()
-            - swords.first().unwrap().fishbone.get_quality()
-    );
+    Ok((swords.last().unwrap().fishbone.get_quality()
+        - swords.first().unwrap().fishbone.get_quality())
+    .to_string())
 }
 
-pub fn solve3(data: String) {
+pub fn solve3(data: &str) -> Result<String, Error> {
     let mut swords = data
         .split_whitespace()
         .map(|s| Sword::from_str(s).unwrap())
@@ -170,5 +169,5 @@ pub fn solve3(data: String) {
         .fold(0, |checksum, (i, sword)| {
             (i as i64 + 1) * sword.identifier + checksum
         });
-    dbg!(c);
+    Ok(c.to_string())
 }

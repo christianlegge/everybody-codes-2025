@@ -1,3 +1,5 @@
+use anyhow::Error;
+
 #[allow(dead_code)]
 fn split_groups<T>(v: T) -> Vec<Vec<<T as IntoIterator>::Item>>
 where
@@ -35,19 +37,21 @@ fn find_pairs(s: &str, mentor: char) -> usize {
     total_novices
 }
 
-pub fn solve(data: String) {
+pub fn solve1(data: &str) -> Result<String, Error> {
     println!("Text input: {}", data);
-    dbg!(find_pairs(&data, 'A'));
+    Ok(find_pairs(&data, 'A').to_string())
 }
 
-pub fn solve2(data: String) {
+pub fn solve2(data: &str) -> Result<String, Error> {
     println!("Text input: {}", data);
-    dbg!(['A', 'B', 'C']
+    Ok(['A', 'B', 'C']
         .map(|x| find_pairs(&data, x))
         .iter()
-        .sum::<usize>());
+        .sum::<usize>()
+        .to_string())
 }
 
-pub fn solve3(data: String) {
+pub fn solve3(data: &str) -> Result<String, Error> {
     println!("Text input: {}", data);
+    Ok("Unimplemented".to_string())
 }

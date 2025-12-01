@@ -1,9 +1,18 @@
+use std::fmt::Display;
+
+use anyhow::Error;
 use regex::Regex;
 
 #[derive(Debug)]
 struct MyNumber {
     x: i64,
     y: i64,
+}
+
+impl Display for MyNumber {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "x: {}, y: {}", self.x, self.y)
+    }
 }
 
 impl MyNumber {
@@ -29,7 +38,7 @@ impl MyNumber {
     }
 }
 
-pub fn solve(data: String) {
+pub fn solve1(data: &str) -> Result<String, Error> {
     println!("Text input: {}", data);
     let re = Regex::new(r"A=\[(\d+),(\d+)\]").unwrap();
     let Some(caps) = re.captures(&data) else {
@@ -49,11 +58,11 @@ pub fn solve(data: String) {
         res = res.add(&start);
     }
 
-    println!("final result: {:#?}", res);
+    Ok(res.to_string())
 }
 
 fn result_exceeds(num: &MyNumber) -> bool {
-    num.x > 1000000 || num.x < -1000000 || num.y > 1000000 || num.y < -1000000
+    num.x > 1_000_000 || num.x < -1_000_000 || num.y > 1_000_000 || num.y < -1_000_000
 }
 
 fn should_engrave(num: &MyNumber) -> bool {
@@ -62,8 +71,8 @@ fn should_engrave(num: &MyNumber) -> bool {
     for _ in 0..100 {
         res = res.mult(&res);
         res = res.div(&MyNumber {
-            x: 100000,
-            y: 100000,
+            x: 100_000,
+            y: 100_000,
         });
         res = res.add(num);
 
@@ -75,7 +84,7 @@ fn should_engrave(num: &MyNumber) -> bool {
     true
 }
 
-pub fn solve2(data: String) {
+pub fn solve2(data: &str) -> Result<String, Error> {
     println!("Text input: {}", data);
     let re = Regex::new(r"A=\[(-?\d+),(-?\d+)\]").unwrap();
     let Some(caps) = re.captures(&data) else {
@@ -101,10 +110,10 @@ pub fn solve2(data: String) {
         }
     }
 
-    println!("final result: {:#?}", engraving);
+    Ok(engraving.to_string())
 }
 
-pub fn solve3(data: String) {
+pub fn solve3(data: &str) -> Result<String, Error> {
     println!("Text input: {}", data);
     let re = Regex::new(r"A=\[(-?\d+),(-?\d+)\]").unwrap();
     let Some(caps) = re.captures(&data) else {
@@ -127,5 +136,5 @@ pub fn solve3(data: String) {
         }
     }
 
-    println!("final result: {:#?}", engraving);
+    Ok(engraving.to_string())
 }

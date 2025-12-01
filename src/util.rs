@@ -1,17 +1,28 @@
-pub fn comma_split_numbers<T: std::str::FromStr>(s: String) -> Vec<T>
+use std::str::FromStr;
+
+use anyhow::{Context, Error};
+use itertools::Itertools;
+
+/// # Errors
+///
+/// Returns an error if any of the strings fail to parse.
+pub fn parse_csv<T: FromStr>(s: &str) -> Result<Vec<T>, Error>
 where
-    <T as std::str::FromStr>::Err: std::fmt::Debug,
+    <T as FromStr>::Err: std::error::Error + Send + Sync + 'static,
 {
-    s.split(",")
-        .map(|x| x.parse::<T>().unwrap())
-        .collect::<Vec<T>>()
+    s.split(',')
+        .map(|x| x.parse::<T>().with_context(|| format!("cannot parse {s}")))
+        .try_collect::<T, Vec<T>, Error>()
 }
 
-pub fn line_split_numbers<T: std::str::FromStr>(s: String) -> Vec<T>
+/// # Errors
+///
+/// Returns an error if any of the strings fail to parse.
+pub fn parse_lines<T: FromStr>(s: &str) -> anyhow::Result<Vec<T>>
 where
-    <T as std::str::FromStr>::Err: std::fmt::Debug,
+    <T as FromStr>::Err: std::error::Error + Send + Sync + 'static,
 {
-    s.split("\n")
-        .map(|x| x.parse::<T>().unwrap())
-        .collect::<Vec<T>>()
+    s.lines()
+        .map(|x| T::from_str(x).with_context(|| format!("cannot parse {s}")))
+        .try_collect::<T, Vec<T>, Error>()
 }

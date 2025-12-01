@@ -1,47 +1,49 @@
 mod puzzles;
 
-use crate::puzzles::*;
 use seq_macro::seq;
 
-fn main() {
+fn get_puzzle_arg() -> Option<String> {
     let args = std::env::args().collect::<Vec<String>>();
-    match args.len() {
-        1 => {
-            println!("No arguments provided");
-        }
-        _ => {
-            let arg = args[1].as_str();
-            let data =
-                std::fs::read_to_string(format!("data/everybody_codes_e2025_{}_p1.txt", arg));
-            let data2 =
-                std::fs::read_to_string(format!("data/everybody_codes_e2025_{}_p2.txt", arg));
-            let data3 =
-                std::fs::read_to_string(format!("data/everybody_codes_e2025_{}_p3.txt", arg));
-            seq!(N in 01..=20 {
-                match arg {
-                #(
-                stringify!(q~N) => {
-                    println!("============== PART 1 ==============");
-                    match data {
-                        Ok(data) => day~N::solve(data),
-                        Err(err) => println!("Error reading data 1: {}", err),
-                    };
-                    println!("============== PART 2 ==============");
-                    match data2 {
-                        Ok(data) => day~N::solve2(data),
-                        Err(err) => println!("Error reading data 2: {}", err),
-                    };
-                    println!("============== PART 3 ==============");
-                    match data3 {
-                        Ok(data) => day~N::solve3(data),
-                        Err(err) => println!("Error reading data 3: {}", err),
-                    };
-                }
-                )*
-                    _ => panic!("Invalid argument {}", arg),
-                }
+    if args.len() == 2 {
+        Some(args[1].to_string())
+    } else {
+        None
+    }
+}
 
-            })
+#[allow(clippy::cognitive_complexity)]
+fn solve_puzzle(arg: &str) {
+    let data = std::fs::read_to_string(format!("data/everybody_codes_e2025_{}_p1.txt", arg));
+    let data2 = std::fs::read_to_string(format!("data/everybody_codes_e2025_{}_p2.txt", arg));
+    let data3 = std::fs::read_to_string(format!("data/everybody_codes_e2025_{}_p3.txt", arg));
+    seq!(N in 01..=20 {
+        match arg {
+        #(
+        stringify!(q~N) => {
+            seq!(I in 1..=3 {
+                if let Ok(data) = std::fs::read_to_string(stringify!(data/everybody_codes_e2025_q~N_p~I.txt)) {
+                    match crate::puzzles::day~N::solve~I(&data) {
+                        Ok(s) => {
+                            println!(stringify!(Part ~I solution: s));
+                        }
+                        Err(e) => println!("Error solving puzzle: {e}")
+                    }
+                }
+                else {
+                    println!(stringify!(Unable to find input ~I));
+                }
+            });
         }
+        )*
+            _ => panic!("Invalid argument {arg}")
+        }
+    })
+}
+
+fn main() {
+    if let Some(arg) = get_puzzle_arg() {
+        solve_puzzle(&arg);
+    } else {
+        println!("No arguments provided");
     }
 }

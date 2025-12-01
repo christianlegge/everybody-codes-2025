@@ -1,5 +1,6 @@
 use std::str::FromStr;
 
+use anyhow::Error;
 use itertools::Itertools;
 
 #[derive(Debug)]
@@ -94,7 +95,7 @@ fn get_knight_moves(row: usize, col: usize, clamp: usize) -> Vec<(usize, usize)>
     moves
 }
 
-pub fn solve(data: String) {
+pub fn solve1(data: &str) -> Result<String, Error> {
     println!("Text input: {}", data);
     let board = match Board::from_str(&data) {
         Ok(b) => b,
@@ -121,13 +122,15 @@ pub fn solve(data: String) {
         .collect::<Vec<_>>()
         .len();
 
-    dbg!(total_moves, dead_sheep);
+    Ok(dead_sheep.to_string())
 }
 
-pub fn solve2(data: String) {
+pub fn solve2(data: &str) -> Result<String, Error> {
     println!("Text input: {}", data);
+    Ok("Unimplemented".to_string())
 }
 
-pub fn solve3(data: String) {
+pub fn solve3(data: &str) -> Result<String, Error> {
     println!("Text input: {}", data);
+    Ok("Unimplemented".to_string())
 }

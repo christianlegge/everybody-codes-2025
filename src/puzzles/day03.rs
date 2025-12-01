@@ -1,6 +1,7 @@
+use anyhow::Error;
 use hashbrown::{HashMap, HashSet};
 
-pub fn solve(data: String) {
+pub fn solve1(data: &str) -> Result<String, Error> {
     println!("Text input: {}", data);
     let crates = data
         .split(",")
@@ -11,10 +12,14 @@ pub fn solve(data: String) {
         crate_set.insert(ele);
     }
     let sum = crate_set.into_iter().reduce(|a, v| a + v);
-    println!("sum: {:#?}", sum);
+    if let Some(s) = sum {
+        Ok(s.to_string())
+    } else {
+        Err(anyhow::anyhow!("unable to reduce sum"))
+    }
 }
 
-pub fn solve2(data: String) {
+pub fn solve2(data: &str) -> Result<String, Error> {
     println!("Text input: {}", data);
     let mut crates = data
         .split(",")
@@ -32,10 +37,14 @@ pub fn solve2(data: String) {
         }
     }
     let sum = crate_set.into_iter().reduce(|a, v| a + v);
-    println!("sum: {:#?}", sum);
+    if let Some(s) = sum {
+        Ok(s.to_string())
+    } else {
+        Err(anyhow::anyhow!("unable to reduce sum"))
+    }
 }
 
-pub fn solve3(data: String) {
+pub fn solve3(data: &str) -> Result<String, Error> {
     println!("Text input: {}", data);
     let crates = data
         .split(",")
@@ -54,5 +63,5 @@ pub fn solve3(data: String) {
             crate_set.insert(ele, 1);
         }
     }
-    println!("max: {:#?}", max);
+    Ok(max.to_string())
 }

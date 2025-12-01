@@ -1,4 +1,6 @@
-pub fn solve(data: String) {
+use anyhow::Error;
+
+pub fn solve1(data: &str) -> Result<String, Error> {
     println!("Text input: {}", data);
     let mut data = data.split("\n");
     let names = data.next().unwrap().split(",").collect::<Vec<&str>>();
@@ -21,10 +23,10 @@ pub fn solve(data: String) {
 
         println!("{:#?} {} {}", sign, dist, idx);
     }
-    println!("name: {}", names[idx as usize])
+    Ok(names[idx as usize].to_string())
 }
 
-pub fn solve2(data: String) {
+pub fn solve2(data: &str) -> Result<String, Error> {
     println!("Text input: {}", data);
     let mut data = data.split("\n");
     let names = data.next().unwrap().split(",").collect::<Vec<&str>>();
@@ -47,10 +49,10 @@ pub fn solve2(data: String) {
 
         println!("{:#?} {} {}", sign, dist, idx);
     }
-    println!("name: {}", names[(idx % names.len() as i32) as usize])
+    Ok(names[(idx % names.len() as i32) as usize].to_string())
 }
 
-pub fn solve3(data: String) {
+pub fn solve3(data: &str) -> Result<String, Error> {
     println!("Text input: {}", data);
     let mut data = data.split("\n");
     let mut names = data.next().unwrap().split(",").collect::<Vec<&str>>();
@@ -71,5 +73,5 @@ pub fn solve3(data: String) {
         println!("{:#?} {} {} {}", sign, dist, off, swap_idx);
         names.swap(0, swap_idx as usize);
     }
-    println!("name: {}", names[0])
+    Ok(names[0].to_string())
 }

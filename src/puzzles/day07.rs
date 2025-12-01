@@ -1,5 +1,6 @@
 use std::{char, fmt::format, str::FromStr};
 
+use anyhow::Error;
 use hashbrown::{HashMap, HashSet};
 use itertools::{all, any};
 
@@ -88,7 +89,7 @@ impl FromStr for Rule {
     }
 }
 
-pub fn solve(data: String) {
+pub fn solve1(data: &str) -> Result<String, Error> {
     println!("Text input: {}", data);
     let mut lines = data.lines();
     let mut names = lines.next().unwrap().split(",");
@@ -101,7 +102,7 @@ pub fn solve(data: String) {
 
     let name = names.find(|&name| g.valid(name)).unwrap();
 
-    println!("name found: {}", name);
+    Ok(name.to_string())
 
     // let rs = vec![
     //     Rule {
@@ -118,7 +119,7 @@ pub fn solve(data: String) {
     // assert!(!g.valid(String::from("aba")));
 }
 
-pub fn solve2(data: String) {
+pub fn solve2(data: &str) -> Result<String, Error> {
     println!("Text input: {}", data);
     let mut lines = data.lines();
     let names = lines.next().unwrap().split(",");
@@ -135,10 +136,10 @@ pub fn solve2(data: String) {
         .map(|(i, _)| i + 1)
         .sum::<usize>();
 
-    dbg!(index_sum);
+    Ok(index_sum.to_string())
 }
 
-pub fn solve3(data: String) {
+pub fn solve3(data: &str) -> Result<String, Error> {
     println!("Text input: {}", data);
 
     let mut lines = data.lines();
@@ -154,5 +155,5 @@ pub fn solve3(data: String) {
         println!("strings for {ele}: {}", g.count_strings(String::from(ele)));
     }
 
-    println!("{}", g.memo_set.len());
+    Ok(g.memo_set.len().to_string())
 }
