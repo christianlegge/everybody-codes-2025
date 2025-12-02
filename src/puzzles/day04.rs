@@ -5,20 +5,19 @@ pub fn solve1(data: &str) -> Result<String, Error> {
     println!("Text input: {data}");
     match parse_lines::<i32>(data) {
         Ok(inputs) => Ok((2025 * inputs[0] / inputs[inputs.len() - 1]).to_string()),
-        Err(err) => Err(err),
+        Err(err) => Err(anyhow::anyhow!(err)),
     }
 }
 
 pub fn solve2(data: &str) -> Result<String, Error> {
     println!("Text input: {data}");
-    match parse_lines::<i32>(data) {
-        Ok(inputs) => Ok(
+    parse_lines::<i32>(data)
+        .map(|inputs| {
             ((10_000_000_000_000_f64 * f64::from(inputs[inputs.len() - 1]) / f64::from(inputs[0]))
                 .ceil())
-            .to_string(),
-        ),
-        Err(err) => Err(err),
-    }
+            .to_string()
+        })
+        .map_err(|e| anyhow::anyhow!(e))
 }
 
 #[derive(Debug)]

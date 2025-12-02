@@ -1,6 +1,7 @@
 use std::str::FromStr;
 
 use anyhow::Error;
+use everybody_codes_2025::util::parse_lines;
 use itertools::Itertools;
 
 #[derive(Debug)]
@@ -82,7 +83,7 @@ fn find_similarity(child: &str, parent1: &str, parent2: &str) -> i32 {
 
 pub fn solve1(data: &str) -> Result<String, Error> {
     println!("Text input: {data}");
-    let scales: Vec<Scale> = data.lines().map(Scale::from_str).try_collect()?;
+    let scales: Vec<Scale> = parse_lines(data)?;
 
     match &scales[..] {
         [one, two, three] => {
