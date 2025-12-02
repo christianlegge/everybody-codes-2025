@@ -4,14 +4,13 @@ use anyhow::Error;
 fn split_groups<T>(v: T) -> Vec<Vec<<T as IntoIterator>::Item>>
 where
     T: IntoIterator,
-    <T as IntoIterator>::Item: Eq,
-    <T as IntoIterator>::Item: Copy,
+    <T as IntoIterator>::Item: Eq + Copy,
 {
     let mut out = Vec::new();
     let mut cur = vec![];
     let mut cur_char = None;
 
-    for n in v.into_iter() {
+    for n in v {
         if n != cur_char.unwrap_or(n) {
             out.push(cur.clone());
             cur.clear();
@@ -38,20 +37,20 @@ fn find_pairs(s: &str, mentor: char) -> usize {
 }
 
 pub fn solve1(data: &str) -> Result<String, Error> {
-    println!("Text input: {}", data);
-    Ok(find_pairs(&data, 'A').to_string())
+    println!("Text input: {data}");
+    Ok(find_pairs(data, 'A').to_string())
 }
 
 pub fn solve2(data: &str) -> Result<String, Error> {
-    println!("Text input: {}", data);
+    println!("Text input: {data}");
     Ok(['A', 'B', 'C']
-        .map(|x| find_pairs(&data, x))
+        .map(|x| find_pairs(data, x))
         .iter()
         .sum::<usize>()
         .to_string())
 }
 
 pub fn solve3(data: &str) -> Result<String, Error> {
-    println!("Text input: {}", data);
+    println!("Text input: {data}");
     Ok("Unimplemented".to_string())
 }

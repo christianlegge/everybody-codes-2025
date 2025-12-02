@@ -2,6 +2,7 @@ use std::str::FromStr;
 
 use anyhow::Error;
 use everybody_codes_2025::util::parse_csv;
+use itertools::Itertools;
 
 #[derive(Debug, Default)]
 struct Fishbone {
@@ -25,13 +26,10 @@ impl Ord for Sword {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
         let a = self.fishbone.get_quality();
         let b = other.fishbone.get_quality();
-        if a != b {
-            a.cmp(&b)
-        } else {
+        if a == b {
             let a_iter = self.fishbone.segments.iter();
-            let mut b_iter = other.fishbone.segments.iter();
-            for x in a_iter {
-                let y = b_iter.next().unwrap();
+            let b_iter = other.fishbone.segments.iter();
+            for (x, y) in a_iter.zip_eq(b_iter) {
                 let x_num = x.get_concat_number();
                 let y_num = y.get_concat_number();
                 if x_num != y_num {
@@ -39,6 +37,8 @@ impl Ord for Sword {
                 }
             }
             self.identifier.cmp(&other.identifier)
+        } else {
+            a.cmp(&b)
         }
     }
 }
@@ -58,32 +58,35 @@ impl PartialEq for Sword {
 impl Eq for Sword {}
 
 impl FromStr for Sword {
-    type Err = Error;
+    type Err = anyhow::Error;
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let parts = s.split(":").collect::<Vec<&str>>();
+        let parts = s.split(':').collect::<Vec<&str>>();
         let numbers = parse_csv::<i64>(parts[1])?;
         if let Some(id) = parts.first() {
-            Ok(Sword {
-                identifier: id.parse::<i64>().unwrap(),
+            Ok(Self {
+                identifier: id.parse::<i64>()?,
                 fishbone: Fishbone::from_numbers(numbers.into_iter()),
             })
         } else {
-            panic!("error constructing sword: {}", s);
+            Err(anyhow::anyhow!("error constructing sword from {s}"))
         }
     }
 }
 
 impl Segment {
     pub fn get_concat_number(&self) -> i64 {
-        let mut number = String::default();
+        let mut number = 0;
         if let Some(n) = self.left {
-            number += &n.to_string();
+            number *= 10;
+            number += &n;
         }
-        number += &self.spine.to_string();
+        number *= 10;
+        number += &self.spine;
         if let Some(n) = self.right {
-            number += &n.to_string();
+            number *= 10;
+            number += &n;
         }
-        number.parse().unwrap()
+        number
     }
 }
 
@@ -92,7 +95,7 @@ impl Fishbone {
     where
         T: Iterator<Item = i64>,
     {
-        let mut fishbone = Fishbone::default();
+        let mut fishbone = Self::default();
         for num in nums {
             fishbone.add_number(num);
         }
@@ -117,17 +120,18 @@ impl Fishbone {
     }
 
     pub fn get_quality(&self) -> i64 {
-        let mut quality = String::default();
+        let mut quality = 0;
         for segment in &self.segments {
-            quality += &segment.spine.to_string();
+            quality *= 10;
+            quality += &segment.spine;
         }
-        quality.parse().unwrap()
+        quality
     }
 }
 
 pub fn solve1(data: &str) -> Result<String, Error> {
-    println!("Text input: {}", data);
-    let parts = data.split(":").collect::<Vec<&str>>();
+    println!("Text input: {data}");
+    let parts = data.split(':').collect::<Vec<&str>>();
     let numbers = parse_csv(parts[1])?;
     let mut fishbone = Fishbone::default();
     for number in numbers {
@@ -138,10 +142,7 @@ pub fn solve1(data: &str) -> Result<String, Error> {
 }
 
 pub fn solve2(data: &str) -> Result<String, Error> {
-    let mut swords = data
-        .split_whitespace()
-        .map(|s| Sword::from_str(s).unwrap())
-        .collect::<Vec<Sword>>();
+    let mut swords: Vec<Sword> = data.lines().map(Sword::from_str).try_collect()?;
     // swords.sort_by(|sword, other| {
     //     sword
     //         .fishbone
@@ -151,23 +152,28 @@ pub fn solve2(data: &str) -> Result<String, Error> {
     swords.sort();
     dbg!(&swords.first());
     dbg!(&swords.last());
-    Ok((swords.last().unwrap().fishbone.get_quality()
-        - swords.first().unwrap().fishbone.get_quality())
+    Ok((swords
+        .last()
+        .ok_or_else(|| anyhow::anyhow!("unable to get last sword"))?
+        .fishbone
+        .get_quality()
+        - swords
+            .first()
+            .ok_or_else(|| anyhow::anyhow!("unable to get first sword"))?
+            .fishbone
+            .get_quality())
     .to_string())
 }
 
 pub fn solve3(data: &str) -> Result<String, Error> {
-    let mut swords = data
-        .split_whitespace()
-        .map(|s| Sword::from_str(s).unwrap())
-        .collect::<Vec<Sword>>();
+    let mut swords: Vec<Sword> = data.lines().map(Sword::from_str).try_collect()?;
     swords.sort();
     let c = swords
         .iter()
         .rev()
         .enumerate()
-        .fold(0, |checksum, (i, sword)| {
-            (i as i64 + 1) * sword.identifier + checksum
+        .try_fold(0, |checksum, (i, sword)| {
+            Ok((i64::try_from(i)? + 1) * sword.identifier + checksum)
         });
-    Ok(c.to_string())
+    c.map(|n| n.to_string())
 }

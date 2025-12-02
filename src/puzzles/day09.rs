@@ -1,4 +1,4 @@
-use std::{num::ParseIntError, str::FromStr};
+use std::str::FromStr;
 
 use anyhow::Error;
 use itertools::Itertools;
@@ -37,26 +37,20 @@ fn find_parents<'a>(child: &Scale, scales: &'a [Scale]) -> Option<(&'a Scale, &'
     None
 }
 
-#[derive(Debug)]
-enum ScaleParseError {
-    InvalidInt,
-    FieldError,
-}
-
-impl From<ParseIntError> for ScaleParseError {
-    fn from(_value: ParseIntError) -> Self {
-        ScaleParseError::InvalidInt
-    }
-}
-
 impl FromStr for Scale {
-    type Err = ScaleParseError;
+    type Err = Error;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let mut parts = s.split(":");
-        Ok(Scale {
-            id: parts.next().ok_or(ScaleParseError::FieldError)?.parse()?,
-            code: parts.next().ok_or(ScaleParseError::FieldError)?.to_string(),
+        let mut parts = s.split(':');
+        Ok(Self {
+            id: parts
+                .next()
+                .ok_or_else(|| anyhow::anyhow!("unable to find id: {s}"))?
+                .parse()?,
+            code: parts
+                .next()
+                .ok_or_else(|| anyhow::anyhow!("unable to find code: {s}"))?
+                .to_string(),
         })
     }
 }
@@ -79,7 +73,7 @@ fn find_similarity(child: &str, parent1: &str, parent2: &str) -> i32 {
     for parent in &[parent1, parent2] {
         let mut sum = 0;
         for (s, o) in child.chars().zip_eq(parent.chars()) {
-            sum += if s == o { 1 } else { 0 };
+            sum += i32::from(s == o);
         }
         similarity *= sum;
     }
@@ -87,33 +81,33 @@ fn find_similarity(child: &str, parent1: &str, parent2: &str) -> i32 {
 }
 
 pub fn solve1(data: &str) -> Result<String, Error> {
-    println!("Text input: {}", data);
-    let mut lines = data.lines();
-    let one = lines.next().unwrap().split(":").nth(1).unwrap();
-    let two = lines.next().unwrap().split(":").nth(1).unwrap();
-    let three = lines.next().unwrap().split(":").nth(1).unwrap();
-    if find_child(one, two, three) {
-        Ok(find_similarity(one, two, three).to_string())
-    } else if find_child(two, one, three) {
-        Ok(find_similarity(two, one, three).to_string())
-    } else if find_child(three, one, two) {
-        Ok(find_similarity(three, one, two).to_string())
-    } else {
-        Err(anyhow::anyhow!("child not found"))
+    println!("Text input: {data}");
+    let scales: Vec<Scale> = data.lines().map(Scale::from_str).try_collect()?;
+
+    match &scales[..] {
+        [one, two, three] => {
+            if find_child(&one.code, &two.code, &three.code) {
+                Ok(find_similarity(&one.code, &two.code, &three.code).to_string())
+            } else if find_child(&two.code, &one.code, &three.code) {
+                Ok(find_similarity(&two.code, &one.code, &three.code).to_string())
+            } else if find_child(&three.code, &one.code, &two.code) {
+                Ok(find_similarity(&three.code, &one.code, &two.code).to_string())
+            } else {
+                Err(anyhow::anyhow!("child not found"))
+            }
+        }
+        _ => Err(anyhow::anyhow!("wrong number of scales")),
     }
 }
 
 pub fn solve2(data: &str) -> Result<String, Error> {
-    println!("Text input: {}", data);
-    let scales = data
-        .lines()
-        .map(|s| Scale::from_str(s).unwrap())
-        .collect::<Vec<Scale>>();
+    println!("Text input: {data}");
+    let scales: Vec<Scale> = data.lines().map(Scale::from_str).try_collect()?;
     let s = find_children(&scales);
     Ok(s.to_string())
 }
 
 pub fn solve3(data: &str) -> Result<String, Error> {
-    println!("Text input: {}", data);
+    println!("Text input: {data}");
     Ok("Unimplemented".to_string())
 }

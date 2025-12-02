@@ -11,20 +11,17 @@ fn get_puzzle_arg() -> Option<String> {
     }
 }
 
-#[allow(clippy::cognitive_complexity)]
+#[allow(clippy::cognitive_complexity, clippy::unnecessary_semicolon)]
 fn solve_puzzle(arg: &str) {
-    let data = std::fs::read_to_string(format!("data/everybody_codes_e2025_{}_p1.txt", arg));
-    let data2 = std::fs::read_to_string(format!("data/everybody_codes_e2025_{}_p2.txt", arg));
-    let data3 = std::fs::read_to_string(format!("data/everybody_codes_e2025_{}_p3.txt", arg));
     seq!(N in 01..=20 {
         match arg {
         #(
         stringify!(q~N) => {
             seq!(I in 1..=3 {
-                if let Ok(data) = std::fs::read_to_string(stringify!(data/everybody_codes_e2025_q~N_p~I.txt)) {
+                if let Ok(data) = std::fs::read_to_string(format!("data/everybody_codes_e2025_q{:02}_p{}.txt", N, I)) {
                     match crate::puzzles::day~N::solve~I(&data) {
                         Ok(s) => {
-                            println!(stringify!(Part ~I solution: s));
+                            println!("Part {} solution: {s}", I);
                         }
                         Err(e) => println!("Error solving puzzle: {e}")
                     }

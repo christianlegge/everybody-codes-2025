@@ -16,22 +16,22 @@ impl Display for MyNumber {
 }
 
 impl MyNumber {
-    pub fn mult(&self, other: &Self) -> Self {
-        MyNumber {
+    pub const fn mult(&self, other: &Self) -> Self {
+        Self {
             x: self.x * other.x - self.y * other.y,
             y: self.x * other.y + self.y * other.x,
         }
     }
 
-    pub fn add(&self, other: &Self) -> Self {
-        MyNumber {
+    pub const fn add(&self, other: &Self) -> Self {
+        Self {
             x: self.x + other.x,
             y: self.y + other.y,
         }
     }
 
-    pub fn div(&self, other: &Self) -> Self {
-        MyNumber {
+    pub const fn div(&self, other: &Self) -> Self {
+        Self {
             x: self.x / other.x,
             y: self.y / other.y,
         }
@@ -39,15 +39,14 @@ impl MyNumber {
 }
 
 pub fn solve1(data: &str) -> Result<String, Error> {
-    println!("Text input: {}", data);
-    let re = Regex::new(r"A=\[(\d+),(\d+)\]").unwrap();
-    let Some(caps) = re.captures(&data) else {
-        panic!("invalid format for number")
-    };
-
+    println!("Text input: {data}");
+    let re = Regex::new(r"A=\[(\d+),(\d+)\]")?;
+    let caps = re
+        .captures(data)
+        .ok_or_else(|| anyhow::anyhow!("Invalid format for number"))?;
     let start = MyNumber {
-        x: caps[1].parse::<i64>().unwrap(),
-        y: caps[2].parse::<i64>().unwrap(),
+        x: caps[1].parse::<i64>()?,
+        y: caps[2].parse::<i64>()?,
     };
 
     let mut res = MyNumber { x: 0, y: 0 };
@@ -61,7 +60,7 @@ pub fn solve1(data: &str) -> Result<String, Error> {
     Ok(res.to_string())
 }
 
-fn result_exceeds(num: &MyNumber) -> bool {
+const fn result_exceeds(num: &MyNumber) -> bool {
     num.x > 1_000_000 || num.x < -1_000_000 || num.y > 1_000_000 || num.y < -1_000_000
 }
 
@@ -85,15 +84,15 @@ fn should_engrave(num: &MyNumber) -> bool {
 }
 
 pub fn solve2(data: &str) -> Result<String, Error> {
-    println!("Text input: {}", data);
-    let re = Regex::new(r"A=\[(-?\d+),(-?\d+)\]").unwrap();
-    let Some(caps) = re.captures(&data) else {
-        panic!("invalid format for number")
-    };
+    println!("Text input: {data}");
+    let re = Regex::new(r"A=\[(-?\d+),(-?\d+)\]")?;
+    let caps = re
+        .captures(data)
+        .ok_or_else(|| anyhow::anyhow!("invalid format for number"))?;
 
     let start = MyNumber {
-        x: caps[1].parse::<i64>().unwrap(),
-        y: caps[2].parse::<i64>().unwrap(),
+        x: caps[1].parse::<i64>()?,
+        y: caps[2].parse::<i64>()?,
     };
 
     let mut engraving = 0;
@@ -114,15 +113,15 @@ pub fn solve2(data: &str) -> Result<String, Error> {
 }
 
 pub fn solve3(data: &str) -> Result<String, Error> {
-    println!("Text input: {}", data);
-    let re = Regex::new(r"A=\[(-?\d+),(-?\d+)\]").unwrap();
-    let Some(caps) = re.captures(&data) else {
-        panic!("invalid format for number")
-    };
+    println!("Text input: {data}");
+    let re = Regex::new(r"A=\[(-?\d+),(-?\d+)\]")?;
+    let caps = re
+        .captures(data)
+        .ok_or_else(|| anyhow::anyhow!("invalid format for number"))?;
 
     let start = MyNumber {
-        x: caps[1].parse::<i64>().unwrap(),
-        y: caps[2].parse::<i64>().unwrap(),
+        x: caps[1].parse::<i64>()?,
+        y: caps[2].parse::<i64>()?,
     };
 
     let mut engraving = 0;

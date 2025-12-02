@@ -2,7 +2,7 @@ use std::{char, fmt::format, str::FromStr};
 
 use anyhow::Error;
 use hashbrown::{HashMap, HashSet};
-use itertools::{all, any};
+use itertools::{all, any, Itertools};
 
 #[derive(Debug)]
 struct Grammar {
@@ -37,7 +37,9 @@ impl Grammar {
             self.memo_set.insert(prefix);
             return 1;
         }
-        let last_char = prefix.chars().last().unwrap();
+        let Some(last_char) = prefix.chars().last() else {
+            panic!("Unable to get prefix chars: {prefix}");
+        };
         let count_self = if prefix.len() < 7 {
             0
         } else {
@@ -78,31 +80,43 @@ impl Rule {
 }
 
 impl FromStr for Rule {
-    type Err = ();
+    type Err = Error;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let mut parts = s.split(" > ");
-        Ok(Rule {
-            start: s.chars().next().unwrap(),
-            follows: parts.nth(1).unwrap().replace(",", ""),
+        Ok(Self {
+            start: s
+                .chars()
+                .next()
+                .ok_or_else(|| anyhow::anyhow!("Unable to find start char in {s}"))?,
+            follows: parts
+                .nth(1)
+                .ok_or_else(|| anyhow::anyhow!("Unable to find follow chars in {s}"))?
+                .replace(',', ""),
         })
     }
 }
 
 pub fn solve1(data: &str) -> Result<String, Error> {
-    println!("Text input: {}", data);
+    println!("Text input: {data}");
     let mut lines = data.lines();
-    let mut names = lines.next().unwrap().split(",");
+    let mut names = lines
+        .next()
+        .ok_or_else(|| anyhow::anyhow!("error finding first line"))?
+        .split(',');
     lines.next();
     let g = Grammar {
-        rules: lines.map(|line| Rule::from_str(line).unwrap()).collect(),
+        rules: lines.map(Rule::from_str).try_collect()?,
         memo_map: HashMap::new(),
         memo_set: HashSet::new(),
     };
 
-    let name = names.find(|&name| g.valid(name)).unwrap();
+    let name = names.find(|&name| g.valid(name));
 
-    Ok(name.to_string())
+    name.map_or_else(
+        || Err(anyhow::anyhow!("couldn't find name")),
+        |n| Ok(n.to_string()),
+    )
 
     // let rs = vec![
     //     Rule {
@@ -120,12 +134,15 @@ pub fn solve1(data: &str) -> Result<String, Error> {
 }
 
 pub fn solve2(data: &str) -> Result<String, Error> {
-    println!("Text input: {}", data);
+    println!("Text input: {data}");
     let mut lines = data.lines();
-    let names = lines.next().unwrap().split(",");
+    let names = lines
+        .next()
+        .ok_or_else(|| anyhow::anyhow!("error finding first line"))?
+        .split(',');
     lines.next();
     let g = Grammar {
-        rules: lines.map(|line| Rule::from_str(line).unwrap()).collect(),
+        rules: lines.map(Rule::from_str).try_collect()?,
         memo_map: HashMap::new(),
         memo_set: HashSet::new(),
     };
@@ -140,13 +157,16 @@ pub fn solve2(data: &str) -> Result<String, Error> {
 }
 
 pub fn solve3(data: &str) -> Result<String, Error> {
-    println!("Text input: {}", data);
+    println!("Text input: {data}");
 
     let mut lines = data.lines();
-    let names = lines.next().unwrap().split(",");
+    let names = lines
+        .next()
+        .ok_or_else(|| anyhow::anyhow!("error finding first line"))?
+        .split(',');
     lines.next();
     let mut g = Grammar {
-        rules: lines.map(|line| Rule::from_str(line).unwrap()).collect(),
+        rules: lines.map(Rule::from_str).try_collect()?,
         memo_map: HashMap::new(),
         memo_set: HashSet::new(),
     };

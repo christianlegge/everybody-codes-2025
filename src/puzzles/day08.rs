@@ -3,12 +3,12 @@ use everybody_codes_2025::util::parse_csv;
 use itertools::Itertools;
 
 pub fn solve1(data: &str) -> Result<String, Error> {
-    println!("Text input: {}", data);
+    println!("Text input: {data}");
     let nums = parse_csv::<i32>(data)?;
     let mut total = 0;
     for (&x, &y) in nums.iter().tuple_windows() {
-        println!("{} {}", x, y);
-        total += if (x - y).abs() == 16 { 1 } else { 0 };
+        println!("{x} {y}");
+        total += i32::from((x - y).abs() == 16);
     }
     // let passes = nums
     //     .iter()
@@ -20,7 +20,7 @@ pub fn solve1(data: &str) -> Result<String, Error> {
 }
 
 pub fn solve2(data: &str) -> Result<String, Error> {
-    println!("Text input: {}", data);
+    println!("Text input: {data}");
     // let data = "1,5,2,6,8,4,1,7,3,5,7,8,2";
     let pegs = 256;
     let nums = parse_csv::<i32>(data)?;
@@ -39,7 +39,7 @@ pub fn solve2(data: &str) -> Result<String, Error> {
                 continue;
             }
             if ((x - cur).rem_euclid(pegs) > split) != ((y - cur).rem_euclid(pegs) > split) {
-                println!("counting string {}-{}", x, y);
+                println!("counting string {x}-{y}");
                 local_crosses += 1;
             }
         }
@@ -50,6 +50,6 @@ pub fn solve2(data: &str) -> Result<String, Error> {
 }
 
 pub fn solve3(data: &str) -> Result<String, Error> {
-    println!("Text input: {}", data);
+    println!("Text input: {data}");
     Ok("Unimplemented".to_string())
 }
